@@ -1,8 +1,8 @@
 package com.pwr.search.engines.wikipedia;
 
-import java.util.Set;
+import java.util.List;
 
 public interface WikipediaArticlesRepository {
 
-    Set<WikipediaArticleDTO> getArticles();
+    List<WikipediaArticle> getArticles();
 }

@@ -18,7 +18,7 @@ public class WikipediaArticlesRepositoryTest {
         String rootDirectoryPath = "src/test/resources/root";
         val articles = new WikipediaArticlesCachingRepository(new DirectoryReader(rootDirectoryPath)).getArticles();
         val articlesIds = articles.stream()
-                .map(WikipediaArticleDTO::getId)
+                .map(WikipediaArticle::getId)
                 .collect(Collectors.toSet());
 
         val expectedArticlesIds = Set.of(1919394, 1919393);

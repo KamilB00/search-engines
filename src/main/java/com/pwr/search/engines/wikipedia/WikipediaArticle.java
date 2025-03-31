@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = WikipediaArticleDTODeserializer.class)
-public class WikipediaArticleDTO {
+@JsonDeserialize(using = WikipediaArticleDeserializer.class)
+public class WikipediaArticle {
 
     private String title;
 

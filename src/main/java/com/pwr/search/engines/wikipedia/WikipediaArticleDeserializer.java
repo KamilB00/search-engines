@@ -7,16 +7,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 
-public class WikipediaArticleDTODeserializer extends JsonDeserializer<WikipediaArticleDTO> {
+public class WikipediaArticleDeserializer extends JsonDeserializer<WikipediaArticle> {
 
     @Override
-    public WikipediaArticleDTO deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public WikipediaArticle deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         ObjectNode node = jsonParser.getCodec().readTree(jsonParser);
         String title = node.get("title").asText();
         int id = node.get("id").asInt();
         String url = node.get("url").asText();
         String text = node.get("text").asText();
         String articleType = node.get("article_type").asText();
-        return new WikipediaArticleDTO(title, id, url, text, articleType);
+        return new WikipediaArticle(title, id, url, text, articleType);
     }
 }

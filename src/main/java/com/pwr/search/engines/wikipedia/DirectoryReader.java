@@ -30,8 +30,8 @@ class DirectoryReader {
         this.rootDirectoryPath = requireNonNull(rootDirectoryPath);
     }
 
-    public Set<WikipediaArticleDTO> read() {
-        Set<WikipediaArticleDTO> articles = new HashSet<>();
+    public Set<WikipediaArticle> read() {
+        Set<WikipediaArticle> articles = new HashSet<>();
         File rootDirectory = new File(rootDirectoryPath);
         if (rootDirectory.isDirectory()) {
             readSubDirectories(rootDirectory, articles);
@@ -39,7 +39,7 @@ class DirectoryReader {
         return articles;
     }
 
-    private void readSubDirectories(File directory, Set<WikipediaArticleDTO> acc) {
+    private void readSubDirectories(File directory, Set<WikipediaArticle> acc) {
         File[] fieldsAndDirectories = directory.listFiles();
         if (fieldsAndDirectories != null) {
             for (File file : fieldsAndDirectories) {
@@ -59,10 +59,10 @@ class DirectoryReader {
         return file.isDirectory() && !file.getName().equals(DIRECTORY_TO_SKIP);
     }
 
-    private Optional<WikipediaArticleDTO> readJsonFile(File jsonFile) {
+    private Optional<WikipediaArticle> readJsonFile(File jsonFile) {
         try {
             String json = Files.readString(Paths.get(jsonFile.getAbsolutePath()));
-            return Optional.ofNullable(new ObjectMapper().readValue(preprocessJSON(json), WikipediaArticleDTO.class));
+            return Optional.ofNullable(new ObjectMapper().readValue(preprocessJSON(json), WikipediaArticle.class));
         } catch (IOException e) {
             log.error("Could not read file", e);
         }

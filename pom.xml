@@ -10,22 +10,10 @@
     </parent>
     <groupId>com.pwr.search.engines</groupId>
     <artifactId>search-engines</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1</version>
     <name>search-engines</name>
     <description>search-engines</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -43,6 +31,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>8.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.0</version>
         </dependency>
     </dependencies>
 

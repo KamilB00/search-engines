@@ -1,6 +1,6 @@
 package com.pwr.search.engines;
 
-import com.pwr.search.engines.wikipedia.WikipediaArticleDTO;
+import com.pwr.search.engines.wikipedia.WikipediaArticle;
 import com.pwr.search.engines.wikipedia.WikipediaArticlesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ public class Controller {
     private final WikipediaArticlesRepository wikipediaArticlesRepository;
 
     @GetMapping
-    public Set<WikipediaArticleDTO> tenArticles() {
+    public Set<WikipediaArticle> tenArticles() {
         return wikipediaArticlesRepository.getArticles()
                 .stream().limit(10)
                 .collect(Collectors.toSet());
