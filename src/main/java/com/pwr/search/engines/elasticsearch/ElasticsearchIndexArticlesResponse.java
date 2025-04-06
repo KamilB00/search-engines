@@ -7,12 +7,12 @@ public record ElasticsearchIndexArticlesResponse(long took, boolean isSuccessful
 
     @Override
     public long took() {
-        return 0;
+        return took;
     }
 
     @Override
     public boolean isSuccessful() {
-        return false;
+        return isSuccessful;
     }
 
     public static IndexArticlesResponse from(BulkResponse response) {

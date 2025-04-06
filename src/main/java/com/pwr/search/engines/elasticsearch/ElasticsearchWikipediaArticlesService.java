@@ -43,7 +43,7 @@ public class ElasticsearchWikipediaArticlesService implements EngineFacade {
                             ),
                     WikipediaArticle.class
             );
-            log.info("Search response took: {}", response.took());
+            log.info("Search for term '{}' took: {} millis", term, response.took());
             return ElasticsearchSearchResult.success(response);
         } catch (Exception e) {
             log.error(e.getMessage());
