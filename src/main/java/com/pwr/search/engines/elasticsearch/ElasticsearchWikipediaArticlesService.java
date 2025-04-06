@@ -30,6 +30,7 @@ public class ElasticsearchWikipediaArticlesService implements EngineFacade {
 
     private final ElasticsearchClient client;
 
+    @Override
     public SearchResult search(String index, String term) {
         try {
             SearchResponse<WikipediaArticle> response = client.search(s -> s
