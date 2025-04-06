@@ -1,9 +1,12 @@
 package com.pwr.search.engines.elasticsearch;
 
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.pwr.search.engines.wikipedia.WikipediaArticle;
-import com.pwr.search.engines.wikipedia.WikipediaArticlesRepository;
+import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
+import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
+import com.pwr.search.engines.Hit;
+import com.pwr.search.engines.IndexArticlesResponse;
+import com.pwr.search.engines.SearchResult;
+import com.pwr.search.wikipedia.WikipediaArticle;
+import com.pwr.search.wikipedia.WikipediaArticlesRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-class ElasticsearchWikipediaArticlesIndexerTest {
+class ElasticsearchWikipediaArticlesServiceTest {
+
+    private static final String WIKIPEDIA_ARTICLES_INDEX = "wikipedia_articles";
 
     @Autowired
     private ElasticsearchWikipediaArticlesService service;
@@ -22,11 +27,11 @@ class ElasticsearchWikipediaArticlesIndexerTest {
     @Autowired
     private WikipediaArticlesRepository wikipediaArticlesRepository;
 
-    private final Logger log = LoggerFactory.getLogger(ElasticsearchWikipediaArticlesIndexerTest.class);
+    private final Logger log = LoggerFactory.getLogger(ElasticsearchWikipediaArticlesServiceTest.class);
 
     @Test
     void shouldDeleteIndex() {
-        service.deleteIndex();
+        service.deleteIndex("");
     }
 
     @Test
@@ -37,13 +42,10 @@ class ElasticsearchWikipediaArticlesIndexerTest {
         log.info("Articles loaded");
         for (List<WikipediaArticle> batch : batchedArticles) {
             try {
-                long start = System.currentTimeMillis();
                 log.info("Started indexing batch...");
-                BulkResponse response = service.bulkIndexArticles(batch);
+                IndexArticlesResponse response = service.indexWikipediaArticles(batch, WIKIPEDIA_ARTICLES_INDEX);
                 log.info("Batch processed");
-                boolean isSuccessful = !response.errors();
-                long end = System.currentTimeMillis();
-                log.info("Indexing {} articles took {} milliseconds and result was {}", batch.size(), (end - start), isSuccessful ? "success" : "failure");
+                log.info("Indexing {} articles took {} milliseconds and result was {}", batch.size(), response.took(), response.isSuccessful() ? "success" : "failure");
             } catch (Exception e) {
                 log.error("Error while indexing: {}", e.getMessage(), e);
             }
@@ -52,12 +54,20 @@ class ElasticsearchWikipediaArticlesIndexerTest {
 
     @Test
     void search() {
-        List<Hit<WikipediaArticle>> hits = service.search("navy");
-
-        for (Hit<WikipediaArticle> hit : hits) {
-            WikipediaArticle product = hit.source();
-            log.info("Hit score {} article {}", hit.score(), product.getTitle());
+        SearchResult result = service.search(WIKIPEDIA_ARTICLES_INDEX, "us navy ship");
+        for (Hit hit : result.hits()) {
+            log.info("Hit score {} id: {} title: {}", hit.scoreBM25(), hit.articleId(), hit.title());
         }
+    }
+
+    @Test
+    void indexInfo() {
+        IndicesStatsResponse response = service.indexStats(WIKIPEDIA_ARTICLES_INDEX).orElseThrow();
+    }
+
+    @Test
+    void nodesInfo() {
+        NodesInfoResponse nodesResponse = service.nodesInfo().orElseThrow();
     }
 
     public static <T> List<List<T>> splitList(List<T> originalList, int batchSize) {

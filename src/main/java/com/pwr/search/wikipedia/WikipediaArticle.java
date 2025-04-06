@@ -1,4 +1,4 @@
-package com.pwr.search.engines.wikipedia;
+package com.pwr.search.wikipedia;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;

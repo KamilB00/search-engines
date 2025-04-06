@@ -64,7 +64,7 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    ElasticsearchWikipediaArticlesService elasticsearchWikipediaArticlesService(ElasticsearchClient elasticsearchClient) {
+    public ElasticsearchWikipediaArticlesService elasticsearchWikipediaArticlesService(ElasticsearchClient elasticsearchClient) {
         return new ElasticsearchWikipediaArticlesService(elasticsearchClient);
     }
 

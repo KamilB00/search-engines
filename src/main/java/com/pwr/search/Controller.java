@@ -1,7 +1,7 @@
-package com.pwr.search.engines;
+package com.pwr.search;
 
-import com.pwr.search.engines.wikipedia.WikipediaArticle;
-import com.pwr.search.engines.wikipedia.WikipediaArticlesRepository;
+import com.pwr.search.wikipedia.WikipediaArticle;
+import com.pwr.search.wikipedia.WikipediaArticlesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
