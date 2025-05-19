@@ -17,30 +17,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-class ElasticsearchWikipediaArticlesServiceTest {
+class WikipediaArticlesElasticsearchServiceTest {
 
     private static final String WIKIPEDIA_ARTICLES_INDEX = "wikipedia_articles";
 
     @Autowired
-    private ElasticsearchWikipediaArticlesService service;
+    private WikipediaArticlesElasticsearchService service;
 
     @Autowired
     private WikipediaArticlesRepository wikipediaArticlesRepository;
 
-    private final Logger log = LoggerFactory.getLogger(ElasticsearchWikipediaArticlesServiceTest.class);
+    private final Logger log = LoggerFactory.getLogger(WikipediaArticlesElasticsearchServiceTest.class);
 
     @Test
     void shouldDeleteIndex() {
-        service.deleteIndex("");
+        service.deleteIndex("wikipedia_articles");
     }
 
     @Test
     void indexAllWikipediaArticles() {
         int batchSize = 1000;
         List<WikipediaArticle> allWikipediaArticles = wikipediaArticlesRepository.getArticles();
-        List<List<WikipediaArticle>> batchedArticles = splitList(allWikipediaArticles, batchSize);
+        List<WikipediaArticleWithCategory> allArticlesWithTestCategory = allWikipediaArticles.stream()
+                .map(article -> new WikipediaArticleWithCategory(article, "test_category"))
+                .toList();
+
+        List<List<WikipediaArticleWithCategory>> batchedArticles = splitList(allArticlesWithTestCategory, batchSize);
         log.info("Articles loaded");
-        for (List<WikipediaArticle> batch : batchedArticles) {
+        for (List<WikipediaArticleWithCategory> batch : batchedArticles) {
             try {
                 log.info("Started indexing batch...");
                 IndexArticlesResponse response = service.indexWikipediaArticles(batch, WIKIPEDIA_ARTICLES_INDEX);
@@ -55,6 +59,7 @@ class ElasticsearchWikipediaArticlesServiceTest {
     @Test
     void search() {
         SearchResult result = service.search(WIKIPEDIA_ARTICLES_INDEX, "us navy ship");
+        log.info("Request {} total hits: {}, took: {} ms", result.isSuccessful() ? "success" : "failure", result.totalHits(), result.took());
         for (Hit hit : result.hits()) {
             log.info("Hit score {} id: {} title: {}", hit.scoreBM25(), hit.articleId(), hit.title());
         }

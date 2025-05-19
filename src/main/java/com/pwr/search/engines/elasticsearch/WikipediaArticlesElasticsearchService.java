@@ -15,18 +15,21 @@ import com.pwr.search.engines.IndexArticlesResponse;
 import com.pwr.search.engines.SearchResult;
 import com.pwr.search.wikipedia.WikipediaArticle;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 
+@Service
 @RequiredArgsConstructor
-public class ElasticsearchWikipediaArticlesService implements EngineFacade {
+public class WikipediaArticlesElasticsearchService implements EngineFacade {
 
-    private final Logger log = LoggerFactory.getLogger(ElasticsearchWikipediaArticlesService.class);
+    private final Logger log = LoggerFactory.getLogger(WikipediaArticlesElasticsearchService.class);
 
     private final ElasticsearchClient client;
 
@@ -35,6 +38,7 @@ public class ElasticsearchWikipediaArticlesService implements EngineFacade {
         try {
             SearchResponse<WikipediaArticle> response = client.search(s -> s
                             .index(index)
+                            .size(10000)
                             .query(q -> q
                                     .match(t -> t
                                             .field("text")
@@ -52,18 +56,29 @@ public class ElasticsearchWikipediaArticlesService implements EngineFacade {
     }
 
     @Override
-    public IndexArticlesResponse indexWikipediaArticles(List<WikipediaArticle> articles, String index) {
+    public IndexArticlesResponse indexWikipediaArticles(List<WikipediaArticleWithCategory> articles, String index) {
         List<BulkOperation> operations = articles.stream().map(article -> BulkOperation.of(b -> b.index(
                 IndexOperation.of(i -> i
                         .index(index)
                         .id(String.valueOf(article.getId()))
-                        .document(article)
+                        .document(article.wikipediaArticle())
                 ))
         )).toList();
 
         BulkRequest bulkRequest = BulkRequest.of(b -> b.operations(operations));
         try {
             BulkResponse response = client.bulk(bulkRequest);
+            val cacheResponse = client.indices().clearCache(indexToClear -> indexToClear.index(index));
+            val shardStatistics = Optional.ofNullable(cacheResponse.shards());
+            if (shardStatistics.isPresent()) {
+                val statistics = shardStatistics.get();
+                val successful = statistics.successful();
+                val failed = statistics.failed();
+                val total = statistics.total();
+                log.info("Clear cache response for index {}: successful: {}, failed: {}, total: {}", index, successful, failed, total);
+            } else {
+                log.error("Cloud not clear cache for index {}", index);
+            }
             return ElasticsearchIndexArticlesResponse.from(response);
         } catch (Exception e) {
             log.error(e.getMessage());
