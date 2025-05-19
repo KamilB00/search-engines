@@ -21,7 +21,7 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      DATA_TO_INDEX_PATH: /Users/kamilbonkowski/Downloads/data
+      DATA_TO_INDEX_PATH: C:/Users/sdwsk/Documents/datasets/wikipedia/data
       ELASTICSEARCH_USERNAME: elastic
       ELASTICSEARCH_PASSWORD: elastic123!@AB
       ELASTICSEARCH_HOST: elasticsearch

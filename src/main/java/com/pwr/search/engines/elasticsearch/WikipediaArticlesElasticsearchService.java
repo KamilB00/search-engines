@@ -24,34 +24,32 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class WikipediaArticlesElasticsearchService implements EngineFacade {
-
     private final Logger log = LoggerFactory.getLogger(WikipediaArticlesElasticsearchService.class);
-
     private final ElasticsearchClient client;
 
     @Override
-    public SearchResult search(String index, String term) {
+    public SearchResult search(String index, String text, int page, int size) {
         try {
             SearchResponse<WikipediaArticle> response = client.search(s -> s
                             .index(index)
-                            .size(10000)
+                            .from(page)
+                            .size(size)
                             .query(q -> q
                                     .match(t -> t
                                             .field("text")
-                                            .query(term)
+                                            .query(text)
                                     )
                             ),
                     WikipediaArticle.class
             );
-            log.info("Search for term '{}' took: {} millis", term, response.took());
-            return ElasticsearchSearchResult.success(response);
+            log.info("Search for text '{}' took: {} millis", text, response.took());
+            return ElasticsearchSearchResult.success(response, page, size);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return ElasticsearchSearchResult.failure();
+            return ElasticsearchSearchResult.failure(page, size);
         }
     }
 
@@ -61,10 +59,9 @@ public class WikipediaArticlesElasticsearchService implements EngineFacade {
                 IndexOperation.of(i -> i
                         .index(index)
                         .id(String.valueOf(article.getId()))
-                        .document(article.wikipediaArticle())
+                        .document(article)
                 ))
         )).toList();
-
         BulkRequest bulkRequest = BulkRequest.of(b -> b.operations(operations));
         try {
             BulkResponse response = client.bulk(bulkRequest);

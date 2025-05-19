@@ -1,5 +1,7 @@
 package com.pwr.search;
 
+import com.pwr.search.engines.SearchResult;
+import com.pwr.search.engines.elasticsearch.ElasticsearchFacade;
 import com.pwr.search.wikipedia.WikipediaArticle;
 import com.pwr.search.wikipedia.WikipediaArticlesRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 @RequiredArgsConstructor
 public class Controller {
-
     private final WikipediaArticlesRepository wikipediaArticlesRepository;
+    private final ElasticsearchFacade elasticsearchFacade;
 
     @GetMapping
     public Set<WikipediaArticle> tenArticles() {
@@ -24,5 +26,8 @@ public class Controller {
                 .collect(Collectors.toSet());
     }
 
-
+    @GetMapping
+    public SearchResult search(String text, int page, int size) {
+        return this.elasticsearchFacade.search("wikipedia_articles", text, page, size);
+    }
 }

@@ -1,6 +1,5 @@
 package com.pwr.search.wikipedia;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;
 import org.slf4j.Logger;
@@ -17,13 +16,9 @@ import java.util.Set;
 import static java.util.Objects.requireNonNull;
 
 class DirectoryReader {
-
     private static final String JSON_FILE_NAME = "text.json";
-
     private static final String DIRECTORY_TO_SKIP = "img";
-
     private final Logger log = LoggerFactory.getLogger(DirectoryReader.class);
-
     private final String rootDirectoryPath;
 
     DirectoryReader(String rootDirectoryPath) {
@@ -75,9 +70,9 @@ class DirectoryReader {
         }
         json = json.replace("\\\"", "\"")
                 .replace("\\\\", "\\");
+        // TODO
         return json;
     }
-
 }
 
 

@@ -9,11 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ElasticsearchFacade {
-
     private final WikipediaArticlesElasticsearchService articlesService;
-
     private final WikipediaArticlesRepository articlesRepository;
-
     private final WikipediaArticleCategoriesRepository categoriesRepository;
 
     public void indexDocumentsAssigningRandomCategory() {
@@ -24,9 +21,7 @@ public class ElasticsearchFacade {
         articlesService.indexWikipediaArticles(allArticlesWithCategories, "articles");
     }
 
-    public SearchResult search(String indexName, String query) {
-        return articlesService.search(indexName, query);
+    public SearchResult search(String indexName, String text, int page, int size) {
+        return articlesService.search(indexName, text, page, size);
     }
-
-    // other functionalities if needed
 }

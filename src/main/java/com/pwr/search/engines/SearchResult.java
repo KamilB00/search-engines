@@ -3,7 +3,6 @@ package com.pwr.search.engines;
 import java.util.List;
 
 public interface SearchResult {
-
     long totalHits();
 
     List<Hit> hits();
@@ -12,4 +11,7 @@ public interface SearchResult {
 
     long took();
 
+    int page();
+
+    int size();
 }
